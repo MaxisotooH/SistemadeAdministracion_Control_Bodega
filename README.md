@@ -65,7 +65,19 @@ agregando su app correspondiente dentro de `apps/`, con su propio
 
 ## Estado del proyecto
 
-Repositorio inicializado con la estructura base del proyecto. El análisis
-del documento funcional y la Carta Gantt (fases, dependencias, horas
-estimadas, hitos y alcance del MVP) se están trabajando por separado antes
-de comenzar el desarrollo módulo por módulo.
+Se está construyendo el MVP definido en `docs/Carta Gantt - Sistema Bodega
+MVP.docx` (4 semanas, 90 HH), que es un recorte del documento funcional
+completo (`docs/Proyecto_Sistema_Administracion_Control_Bodega.docx`).
+
+- ✅ Semana 1 (parcial): app `apps/maestros` con el DER simplificado
+  (Producto, Categoría, Marca, Unidad de medida, Proveedor, Cliente,
+  Bodega, Zona, Ubicación), administrable vía Django Admin.
+- ⬜ Semana 1: roles y permisos (grupos de Django) para los perfiles del
+  documento funcional.
+- ⬜ Semana 2: Recepción/Almacenamiento y Kardex automático (signals).
+- ⬜ Semana 3: Vista de inventario/stock disponible y Despacho.
+- ⬜ Semana 4: Pruebas del ciclo completo e implementación del MVP.
+
+Quedan fuera del MVP (documentados como Fase 2): devoluciones, ajustes de
+inventario físico, dashboard valorizado, alertas, reportes/exportación y
+auditoría avanzada.
