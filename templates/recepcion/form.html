@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Nueva recepción · Bodega{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Nueva recepción</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="card mb-4">
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Proveedor</label>
+                {{ form.proveedor }}
+                {{ form.proveedor.errors }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">N° documento</label>
+                {{ form.numero_documento }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha</label>
+                {{ form.fecha }}
+                {{ form.fecha.errors }}
+            </div>
+            <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                {{ form.observaciones }}
+            </div>
+        </div>
+    </div>
+
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}
+        <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Productos recibidos</span>
+            <button type="button" id="add-row" class="btn btn-sm btn-outline-primary">+ Agregar línea</button>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0" id="detalle-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Ubicación</th>
+                        <th>Cantidad</th>
+                        <th>Lote</th>
+                        <th>Vencimiento</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="detalle-body">
+                    {% for f in formset %}
+                    <tr class="detalle-row">
+                        <td>{{ f.producto }}{{ f.producto.errors }}</td>
+                        <td>{{ f.ubicacion }}{{ f.ubicacion.errors }}</td>
+                        <td>{{ f.cantidad }}{{ f.cantidad.errors }}</td>
+                        <td>{{ f.lote }}</td>
+                        <td>{{ f.fecha_vencimiento }}</td>
+                        <td class="text-center align-middle">
+                            {% if f.instance.pk %}{{ f.DELETE }} Eliminar{% endif %}
+                        </td>
+                        {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+                        {{ f.non_field_errors }}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar recepción</button>
+    <a href="{% url 'recepcion:lista' %}" class="btn btn-link">Cancelar</a>
+</form>
+
+<template id="empty-form-template">
+    <tr class="detalle-row">
+        <td>{{ formset.empty_form.producto }}</td>
+        <td>{{ formset.empty_form.ubicacion }}</td>
+        <td>{{ formset.empty_form.cantidad }}</td>
+        <td>{{ formset.empty_form.lote }}</td>
+        <td>{{ formset.empty_form.fecha_vencimiento }}</td>
+        <td></td>
+    </tr>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('add-row').addEventListener('click', function () {
+    const totalForms = document.getElementById('id_detalles-TOTAL_FORMS');
+    const index = parseInt(totalForms.value, 10);
+    const template = document.getElementById('empty-form-template').innerHTML.replace(/__prefix__/g, index);
+    const tbody = document.getElementById('detalle-body');
+    const wrapper = document.createElement('tbody');
+    wrapper.innerHTML = template;
+    tbody.appendChild(wrapper.firstElementChild);
+    totalForms.value = index + 1;
+});
+</script>
+{% endblock %}

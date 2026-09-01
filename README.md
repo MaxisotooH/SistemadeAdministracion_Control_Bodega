@@ -69,14 +69,24 @@ Se está construyendo el MVP definido en `docs/Carta Gantt - Sistema Bodega
 MVP.docx` (4 semanas, 90 HH), que es un recorte del documento funcional
 completo (`docs/Proyecto_Sistema_Administracion_Control_Bodega.docx`).
 
-- ✅ Semana 1 (parcial): app `apps/maestros` con el DER simplificado
-  (Producto, Categoría, Marca, Unidad de medida, Proveedor, Cliente,
-  Bodega, Zona, Ubicación), administrable vía Django Admin.
-- ⬜ Semana 1: roles y permisos (grupos de Django) para los perfiles del
-  documento funcional.
-- ⬜ Semana 2: Recepción/Almacenamiento y Kardex automático (signals).
-- ⬜ Semana 3: Vista de inventario/stock disponible y Despacho.
-- ⬜ Semana 4: Pruebas del ciclo completo e implementación del MVP.
+- ✅ Semana 1: app `apps/maestros` con el DER simplificado (Producto,
+  Categoría, Marca, Unidad de medida, Proveedor, Cliente, Bodega, Zona,
+  Ubicación) administrable vía Django Admin; roles y permisos (grupos de
+  Django: Administrador, Jefe de Bodega, Operador de Bodega, Compras,
+  Ventas, Contabilidad y Auditoría de consulta).
+- ✅ Semana 2: módulo de Recepción (formulario con líneas de detalle) y
+  Kardex automático vía `signals` de Django al guardar cada línea.
+- ✅ Semana 3: vista de Inventario (stock disponible filtrable por
+  producto/bodega) y módulo de Despacho con descuento de stock y
+  validación de stock insuficiente (incluye el caso de varias líneas del
+  mismo producto/ubicación en un mismo despacho).
+- ⬜ Semana 4: pruebas formales del ciclo completo e implementación del
+  MVP (elegir motor de BD para producción — por ahora se desarrolla con
+  SQLite).
+
+Probado manualmente de punta a punta: recepción → actualización de stock
+→ Kardex → despacho con descuento → bloqueo de despachos que exceden el
+stock disponible.
 
 Quedan fuera del MVP (documentados como Fase 2): devoluciones, ajustes de
 inventario físico, dashboard valorizado, alertas, reportes/exportación y

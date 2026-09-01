@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Inventario · Bodega{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Stock disponible</h1>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="producto" class="form-select">
+            <option value="">Todos los productos</option>
+            {% for p in productos %}
+            <option value="{{ p.pk }}" {% if producto_id == p.pk|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="bodega" class="form-select">
+            <option value="">Todas las bodegas</option>
+            {% for b in bodegas %}
+            <option value="{{ b.pk }}" {% if bodega_id == b.pk|stringformat:"s" %}selected{% endif %}>{{ b }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+        <a href="{% url 'inventario:stock' %}" class="btn btn-link">Limpiar</a>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Bodega</th>
+            <th>Ubicación</th>
+            <th>Lote</th>
+            <th>Vencimiento</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in stocks %}
+        <tr>
+            <td>{{ s.producto }}</td>
+            <td>{{ s.ubicacion.zona.bodega }}</td>
+            <td>{{ s.ubicacion }}</td>
+            <td>{{ s.lote|default:"—" }}</td>
+            <td>{{ s.fecha_vencimiento|default:"—" }}</td>
+            <td>{{ s.cantidad }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-muted text-center py-4">Sin stock disponible con estos filtros.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

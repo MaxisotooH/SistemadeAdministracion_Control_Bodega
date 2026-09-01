@@ -43,13 +43,11 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'apps.core',
     'apps.maestros',
+    'apps.inventario',
+    'apps.recepcion',
+    'apps.despacho',
     # 'apps.usuarios',
     # 'apps.compras',
-    # 'apps.recepcion',
-    # 'apps.almacenamiento',
-    # 'apps.picking',
-    # 'apps.despacho',
-    # 'apps.kardex',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS

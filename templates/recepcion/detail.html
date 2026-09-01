@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Recepción #{{ recepcion.pk }} · Bodega{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Recepción #{{ recepcion.pk }}</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Proveedor</dt>
+    <dd class="col-sm-10">{{ recepcion.proveedor }}</dd>
+    <dt class="col-sm-2">Fecha</dt>
+    <dd class="col-sm-10">{{ recepcion.fecha }}</dd>
+    <dt class="col-sm-2">N° documento</dt>
+    <dd class="col-sm-10">{{ recepcion.numero_documento|default:"—" }}</dd>
+    <dt class="col-sm-2">Registrado por</dt>
+    <dd class="col-sm-10">{{ recepcion.registrado_por }}</dd>
+    {% if recepcion.observaciones %}
+    <dt class="col-sm-2">Observaciones</dt>
+    <dd class="col-sm-10">{{ recepcion.observaciones }}</dd>
+    {% endif %}
+</dl>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Ubicación</th>
+            <th>Cantidad</th>
+            <th>Lote</th>
+            <th>Vencimiento</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in recepcion.detalles.all %}
+        <tr>
+            <td>{{ d.producto }}</td>
+            <td>{{ d.ubicacion }}</td>
+            <td>{{ d.cantidad }}</td>
+            <td>{{ d.lote|default:"—" }}</td>
+            <td>{{ d.fecha_vencimiento|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'recepcion:lista' %}" class="btn btn-link">Volver al listado</a>
+{% endblock %}
