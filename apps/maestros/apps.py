@@ -1,0 +1,8 @@
+from django.apps import AppConfig
+
+
+class MaestrosConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.maestros'
+    label = 'maestros'
+    verbose_name = 'Maestros'

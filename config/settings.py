@@ -42,8 +42,8 @@ DJANGO_APPS = [
 # autenticación, permisos base).
 LOCAL_APPS = [
     'apps.core',
+    'apps.maestros',
     # 'apps.usuarios',
-    # 'apps.maestros',
     # 'apps.compras',
     # 'apps.recepcion',
     # 'apps.almacenamiento',
