@@ -18,6 +18,7 @@
     {% endif %}
 </dl>
 
+<div class="table-responsive">
 <table class="table table-striped">
     <thead>
         <tr>
@@ -38,6 +39,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 
 <a href="{% url 'despacho:lista' %}" class="btn btn-link">Volver al listado</a>
 {% endblock %}
