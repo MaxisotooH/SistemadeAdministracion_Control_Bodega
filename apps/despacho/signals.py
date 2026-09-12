@@ -8,8 +8,10 @@ from .models import DespachoDetalle
 
 
 @receiver(post_save, sender=DespachoDetalle)
-def registrar_salida_kardex(sender, instance, created, **kwargs):
-    if not created:
+def registrar_salida_kardex(sender, instance, created, raw=False, **kwargs):
+    # raw=True durante loaddata/fixtures: el Stock y el Kardex ya vienen
+    # incluidos en los datos cargados, no hay que recalcularlos.
+    if not created or raw:
         return
 
     with transaction.atomic():

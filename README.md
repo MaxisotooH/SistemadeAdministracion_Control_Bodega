@@ -80,13 +80,15 @@ completo (`docs/Proyecto_Sistema_Administracion_Control_Bodega.docx`).
   producto/bodega) y módulo de Despacho con descuento de stock y
   validación de stock insuficiente (incluye el caso de varias líneas del
   mismo producto/ubicación en un mismo despacho).
-- ⬜ Semana 4: pruebas formales del ciclo completo e implementación del
-  MVP (elegir motor de BD para producción — por ahora se desarrolla con
-  SQLite).
+- 🔶 Semana 4 (en curso): motor de base de datos definido — **PostgreSQL 17**
+  instalado y en uso en desarrollo (antes se usaba SQLite como paso
+  intermedio). Datos de prueba migrados sin pérdida. Falta: pruebas
+  adicionales de casos borde e implementación/despliegue del MVP.
 
-Probado manualmente de punta a punta: recepción → actualización de stock
-→ Kardex → despacho con descuento → bloqueo de despachos que exceden el
-stock disponible.
+Probado manualmente de punta a punta (contra PostgreSQL): recepción →
+actualización de stock → Kardex → despacho con descuento → bloqueo de
+despachos que exceden el stock disponible. Los 5 tests automatizados
+también corren contra PostgreSQL.
 
 Quedan fuera del MVP (documentados como Fase 2): devoluciones, ajustes de
 inventario físico, dashboard valorizado, alertas, reportes/exportación y
