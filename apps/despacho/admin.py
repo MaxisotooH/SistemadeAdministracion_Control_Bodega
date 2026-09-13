@@ -8,6 +8,7 @@ class DespachoDetalleInline(admin.TabularInline):
     model = DespachoDetalle
     formset = DespachoDetalleBaseFormSet
     extra = 1
+    can_delete = False
 
 
 @admin.register(Despacho)
@@ -21,3 +22,9 @@ class DespachoAdmin(admin.ModelAdmin):
         if not obj.pk and not obj.registrado_por_id:
             obj.registrado_por = request.user
         super().save_model(request, obj, form, change)
+
+    def has_delete_permission(self, request, obj=None):
+        # Eliminar un despacho no revierte el Stock ni el Kardex ya
+        # generados (no hay signal de post_delete): una vez registrado,
+        # se deja como historial protegido, igual que el Kardex.
+        return False

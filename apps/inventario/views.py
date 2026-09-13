@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
 
 from apps.maestros.models import Bodega, Producto
@@ -7,6 +7,7 @@ from .models import Kardex, Stock
 
 
 @login_required
+@permission_required('inventario.view_stock', raise_exception=True)
 def stock_list(request):
     stocks = Stock.objects.select_related('producto', 'ubicacion__zona__bodega').filter(cantidad__gt=0)
 
@@ -31,6 +32,7 @@ def stock_list(request):
 
 
 @login_required
+@permission_required('inventario.view_kardex', raise_exception=True)
 def kardex_list(request):
     movimientos = Kardex.objects.select_related('producto', 'ubicacion__zona__bodega', 'usuario')
 

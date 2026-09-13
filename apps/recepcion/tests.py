@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.test import TestCase
+from django.urls import reverse
 
 from apps.inventario.models import Kardex, Stock
 from apps.maestros.models import Bodega, Categoria, Producto, Proveedor, UnidadMedida, Ubicacion, Zona
@@ -55,3 +57,30 @@ class RecepcionKardexTests(TestCase):
         stock = Stock.objects.get(producto=self.producto, ubicacion=self.ubicacion, lote='')
         self.assertEqual(stock.cantidad, 15)
         self.assertEqual(Kardex.objects.filter(producto=self.producto).count(), 2)
+
+
+class RecepcionPermisosTests(TestCase):
+    """Un usuario sin el rol adecuado no debe poder crear ni ver recepciones."""
+
+    def setUp(self):
+        self.sin_rol = User.objects.create_user('sinrol', password='clave12345')
+
+        self.consulta = User.objects.create_user('consulta', password='clave12345')
+        self.consulta.groups.add(Group.objects.get(name='Contabilidad (consulta)'))
+
+        self.operador = User.objects.create_user('operador2', password='clave12345')
+        self.operador.groups.add(Group.objects.get(name='Operador de Bodega'))
+
+    def test_usuario_sin_rol_no_puede_ver_ni_crear(self):
+        self.client.force_login(self.sin_rol)
+        self.assertEqual(self.client.get(reverse('recepcion:lista')).status_code, 403)
+        self.assertEqual(self.client.get(reverse('recepcion:nueva')).status_code, 403)
+
+    def test_rol_de_solo_consulta_puede_ver_pero_no_crear(self):
+        self.client.force_login(self.consulta)
+        self.assertEqual(self.client.get(reverse('recepcion:lista')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('recepcion:nueva')).status_code, 403)
+
+    def test_operador_de_bodega_puede_crear(self):
+        self.client.force_login(self.operador)
+        self.assertEqual(self.client.get(reverse('recepcion:nueva')).status_code, 200)

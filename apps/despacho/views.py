@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -8,12 +8,14 @@ from .models import Despacho
 
 
 @login_required
+@permission_required('despacho.view_despacho', raise_exception=True)
 def despacho_list(request):
     despachos = Despacho.objects.select_related('cliente').order_by('-fecha', '-id')[:100]
     return render(request, 'despacho/list.html', {'despachos': despachos})
 
 
 @login_required
+@permission_required('despacho.add_despacho', raise_exception=True)
 def despacho_create(request):
     if request.method == 'POST':
         form = DespachoForm(request.POST)
@@ -34,6 +36,7 @@ def despacho_create(request):
 
 
 @login_required
+@permission_required('despacho.view_despacho', raise_exception=True)
 def despacho_detail(request, pk):
     despacho = get_object_or_404(
         Despacho.objects.select_related('cliente', 'registrado_por')

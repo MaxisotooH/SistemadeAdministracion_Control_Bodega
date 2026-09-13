@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.urls import reverse
 
 from apps.inventario.models import Kardex, Stock
 from apps.maestros.models import Bodega, Categoria, Cliente, Producto, UnidadMedida, Ubicacion, Zona
@@ -80,3 +82,44 @@ class DespachoStockTests(TestCase):
 
         stock = Stock.objects.get(producto=self.producto, ubicacion=self.ubicacion, lote='')
         self.assertEqual(stock.cantidad, 30)
+
+
+class DespachoPermisosTests(TestCase):
+    """Control de acceso: solo roles con permiso pueden ver/crear despachos,
+    y nadie (ni superusuario) puede eliminarlos, porque borrar un despacho
+    no revierte el Stock ni el Kardex ya generados."""
+
+    def setUp(self):
+        self.sin_rol = User.objects.create_user('sinrol', password='clave12345')
+
+        self.ventas = User.objects.create_user('ventas', password='clave12345')
+        self.ventas.groups.add(Group.objects.get(name='Ventas'))
+
+        categoria = Categoria.objects.create(nombre='General')
+        unidad = UnidadMedida.objects.create(codigo='UN', nombre='Unidad')
+        producto = Producto.objects.create(
+            sku='SKU-2', nombre='Producto test 2', categoria=categoria, unidad_medida=unidad,
+        )
+        bodega = Bodega.objects.create(codigo='B2', nombre='Bodega 2')
+        zona = Zona.objects.create(bodega=bodega, codigo='Z2', nombre='Zona 2')
+        Ubicacion.objects.create(zona=zona, codigo='U2')
+        cliente = Cliente.objects.create(razon_social='Cliente test 2', rut='2-7')
+        self.despacho = Despacho.objects.create(
+            cliente=cliente, fecha='2026-01-01', registrado_por=self.ventas,
+        )
+
+    def test_usuario_sin_rol_no_puede_ver_ni_crear(self):
+        self.client.force_login(self.sin_rol)
+        self.assertEqual(self.client.get(reverse('despacho:lista')).status_code, 403)
+        self.assertEqual(self.client.get(reverse('despacho:nuevo')).status_code, 403)
+
+    def test_ventas_puede_crear(self):
+        self.client.force_login(self.ventas)
+        self.assertEqual(self.client.get(reverse('despacho:nuevo')).status_code, 200)
+
+    def test_ni_siquiera_superusuario_puede_eliminar_via_admin(self):
+        admin_user = User.objects.create_superuser('super', 'super@test.com', 'clave12345')
+        self.client.force_login(admin_user)
+        url = reverse('admin:despacho_despacho_delete', args=[self.despacho.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)

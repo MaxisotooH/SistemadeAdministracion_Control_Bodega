@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -8,12 +8,14 @@ from .models import Recepcion
 
 
 @login_required
+@permission_required('recepcion.view_recepcion', raise_exception=True)
 def recepcion_list(request):
     recepciones = Recepcion.objects.select_related('proveedor').order_by('-fecha', '-id')[:100]
     return render(request, 'recepcion/list.html', {'recepciones': recepciones})
 
 
 @login_required
+@permission_required('recepcion.add_recepcion', raise_exception=True)
 def recepcion_create(request):
     if request.method == 'POST':
         form = RecepcionForm(request.POST)
@@ -34,6 +36,7 @@ def recepcion_create(request):
 
 
 @login_required
+@permission_required('recepcion.view_recepcion', raise_exception=True)
 def recepcion_detail(request, pk):
     recepcion = get_object_or_404(
         Recepcion.objects.select_related('proveedor', 'registrado_por')
