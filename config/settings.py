@@ -27,7 +27,11 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 # ---------------------------------------------------------------------------
 # Aplicaciones instaladas
 # ---------------------------------------------------------------------------
+# 'jazzmin' le da al admin de Django una apariencia moderna y amigable
+# (iconos, sidebar, temas) -- debe ir ANTES que 'django.contrib.admin'
+# para poder reemplazar sus plantillas.
 DJANGO_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -169,6 +173,63 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
 CSRF_FAILURE_VIEW = 'apps.core.views.csrf_failure'
+
+# ---------------------------------------------------------------------------
+# Apariencia del admin (django-jazzmin): pensado para gente que no usa
+# este tipo de herramientas a diario -- iconos claros por seccion, colores
+# suaves y textos en español, en vez del admin tecnico por defecto.
+# ---------------------------------------------------------------------------
+JAZZMIN_SETTINGS = {
+    'site_title': 'Bodega',
+    'site_header': 'Bodega',
+    'site_brand': 'Sistema de Bodega',
+    'welcome_sign': 'Bienvenido al sistema de administración de bodega',
+    'copyright': 'Sistema de Administración y Control de Bodega',
+    'show_sidebar': True,
+    'navigation_expanded': True,
+    'search_model': ['maestros.Producto', 'maestros.Cliente', 'maestros.Proveedor'],
+    'icons': {
+        'auth.Group': 'fas fa-users-cog',
+        'auth.User': 'fas fa-user',
+        'maestros.Producto': 'fas fa-box',
+        'maestros.Categoria': 'fas fa-tags',
+        'maestros.Marca': 'fas fa-certificate',
+        'maestros.UnidadMedida': 'fas fa-ruler',
+        'maestros.Proveedor': 'fas fa-truck',
+        'maestros.Cliente': 'fas fa-user-tie',
+        'maestros.Bodega': 'fas fa-warehouse',
+        'maestros.Zona': 'fas fa-layer-group',
+        'maestros.Ubicacion': 'fas fa-map-marker-alt',
+        'inventario.Stock': 'fas fa-boxes',
+        'inventario.Kardex': 'fas fa-history',
+        'recepcion.Recepcion': 'fas fa-dolly',
+        'despacho.Despacho': 'fas fa-shipping-fast',
+    },
+    'default_icon_parents': 'fas fa-folder',
+    'default_icon_children': 'fas fa-circle',
+    'related_modal_active': True,
+    'show_ui_builder': False,
+    'language_chooser': False,
+    'custom_links': {
+        'core': [{
+            'name': 'Volver al inicio',
+            'url': '/',
+            'icon': 'fas fa-home',
+        }],
+    },
+}
+
+JAZZMIN_UI_TWEAKS = {
+    'theme': 'flatly',
+    'navbar': 'navbar-white navbar-light',
+    'sidebar': 'sidebar-light-primary',
+    'brand_colour': 'navbar-primary',
+    'accent': 'accent-primary',
+    'navbar_fixed': True,
+    'sidebar_fixed': True,
+    'sidebar_nav_child_indent': True,
+    'layout_boxed': False,
+}
 
 # ---------------------------------------------------------------------------
 # Endurecimiento para produccion (solo aplica cuando DEBUG=False, para no
