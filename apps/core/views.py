@@ -7,3 +7,7 @@ def dashboard(request):
     """Panel principal. Se irá completando con indicadores por módulo
     (stock crítico, recepciones pendientes, despachos del día, etc.)."""
     return render(request, 'core/dashboard.html')
+
+
+def csrf_failure(request, reason=''):
+    return render(request, '403_csrf.html', status=403)

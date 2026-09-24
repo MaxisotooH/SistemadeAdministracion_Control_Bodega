@@ -50,7 +50,18 @@ LOCAL_APPS = [
     # 'apps.compras',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+# 'axes' controla el bloqueo de cuentas tras varios intentos de login
+# fallidos (ver AXES_* mas abajo).
+THIRD_PARTY_APPS = [
+    'axes',
+]
+
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,7 +72,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Debe ser el ultimo middleware (lo exige django-axes).
+    'axes.middleware.AxesMiddleware',
 ]
+
+# ---------------------------------------------------------------------------
+# Bloqueo de cuenta tras intentos fallidos (django-axes)
+# ---------------------------------------------------------------------------
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # horas
+AXES_LOCKOUT_TEMPLATE = '403_bloqueado.html'
+AXES_RESET_ON_SUCCESS = True
 
 ROOT_URLCONF = 'config.urls'
 
@@ -146,6 +167,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+CSRF_FAILURE_VIEW = 'apps.core.views.csrf_failure'
 
 # ---------------------------------------------------------------------------
 # Endurecimiento para produccion (solo aplica cuando DEBUG=False, para no
