@@ -20,3 +20,38 @@
     position: relative;
     z-index: 2;
 }
+
+/* Pantalla de login */
+.auth-body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #e8f0fb 0%, #f5f8fc 55%, #ffffff 100%);
+}
+
+.auth-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 380px;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 3rem rgba(13, 30, 60, 0.1);
+    padding: 2.5rem 2rem;
+}
+
+.auth-brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: #fff;
+    font-size: 1.5rem;
+}
