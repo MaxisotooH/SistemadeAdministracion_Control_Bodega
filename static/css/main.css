@@ -1,1 +1,22 @@
 /* Estilos propios del sistema, por encima de Bootstrap 5. */
+
+.module-icon {
+    font-size: 1.5rem;
+    color: var(--bs-primary);
+}
+
+.module-card {
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.module-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Un boton dentro de una tarjeta con stretched-link necesita quedar por
+   encima del ::after del link estirado para seguir siendo clickeable. */
+.module-card .btn {
+    position: relative;
+    z-index: 2;
+}

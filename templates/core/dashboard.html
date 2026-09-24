@@ -1,10 +1,93 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · Bodega{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<h1 class="h3 mb-4">Dashboard</h1>
-<p class="text-muted">
-    Panel principal del sistema. Los indicadores por módulo (stock crítico,
-    recepciones pendientes, despachos del día, etc.) se irán agregando a
-    medida que avance el desarrollo.
-</p>
+<div class="mb-4">
+    <h1 class="h3 mb-1">Hola, {{ user.get_full_name|default:user.username }}</h1>
+    <p class="text-muted mb-0">¿Qué necesitas hacer hoy?</p>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+
+    {% if user.is_staff and perms.maestros.view_producto %}
+    <div class="col">
+        <div class="card h-100 module-card">
+            <div class="card-body">
+                <i class="bi bi-box-seam module-icon"></i>
+                <h2 class="h6 card-title mt-2 mb-1">
+                    <a href="{% url 'admin:maestros_producto_changelist' %}" class="stretched-link text-reset text-decoration-none">Maestros</a>
+                </h2>
+                <p class="card-text text-muted small mb-0">Productos, bodegas, proveedores y clientes.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if perms.recepcion.view_recepcion %}
+    <div class="col">
+        <div class="card h-100 module-card">
+            <div class="card-body">
+                <i class="bi bi-box-arrow-in-down module-icon"></i>
+                <h2 class="h6 card-title mt-2 mb-1">
+                    <a href="{% url 'recepcion:lista' %}" class="stretched-link text-reset text-decoration-none">Recepción</a>
+                </h2>
+                <p class="card-text text-muted small mb-2">Registrar mercadería que ingresa a bodega.</p>
+                {% if perms.recepcion.add_recepcion %}
+                <a href="{% url 'recepcion:nueva' %}" class="btn btn-sm btn-outline-primary position-relative">+ Nueva recepción</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if perms.inventario.view_stock %}
+    <div class="col">
+        <div class="card h-100 module-card">
+            <div class="card-body">
+                <i class="bi bi-clipboard-data module-icon"></i>
+                <h2 class="h6 card-title mt-2 mb-1">
+                    <a href="{% url 'inventario:stock' %}" class="stretched-link text-reset text-decoration-none">Inventario</a>
+                </h2>
+                <p class="card-text text-muted small mb-0">Consultar el stock disponible por producto y bodega.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if perms.inventario.view_kardex %}
+    <div class="col">
+        <div class="card h-100 module-card">
+            <div class="card-body">
+                <i class="bi bi-journal-text module-icon"></i>
+                <h2 class="h6 card-title mt-2 mb-1">
+                    <a href="{% url 'inventario:kardex' %}" class="stretched-link text-reset text-decoration-none">Kardex</a>
+                </h2>
+                <p class="card-text text-muted small mb-0">Historial completo de movimientos de stock.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if perms.despacho.view_despacho %}
+    <div class="col">
+        <div class="card h-100 module-card">
+            <div class="card-body">
+                <i class="bi bi-box-arrow-up module-icon"></i>
+                <h2 class="h6 card-title mt-2 mb-1">
+                    <a href="{% url 'despacho:lista' %}" class="stretched-link text-reset text-decoration-none">Despacho</a>
+                </h2>
+                <p class="card-text text-muted small mb-2">Registrar la salida de productos a clientes.</p>
+                {% if perms.despacho.add_despacho %}
+                <a href="{% url 'despacho:nuevo' %}" class="btn btn-sm btn-outline-primary position-relative">+ Nuevo despacho</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
 {% endblock %}
