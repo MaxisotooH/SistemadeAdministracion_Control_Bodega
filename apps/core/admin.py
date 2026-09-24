@@ -1,8 +1,33 @@
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
 
 from axes.conf import settings as axes_settings
 from axes.handlers.database import AxesDatabaseHandler
 from axes.models import AccessAttempt, AccessFailureLog, AccessLog
+
+
+# Los selectores de permisos/grupos (doble lista) quedan muy angostos con
+# el CSS base de Django y cortan el texto -- se ensancha con un CSS propio,
+# sin reemplazar el UserAdmin/GroupAdmin de Django (se reutiliza tal cual,
+# solo se le agrega esta hoja de estilos).
+class _AnchoExtraMixin:
+    class Media:
+        css = {'all': ('css/admin_extra.css',)}
+
+
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+
+@admin.register(User)
+class UserAdminAncho(_AnchoExtraMixin, UserAdmin):
+    pass
+
+
+@admin.register(Group)
+class GroupAdminAncho(_AnchoExtraMixin, GroupAdmin):
+    pass
 
 # django-axes no trae traduccion al español (revisar su carpeta locale/),
 # asi que sus pantallas de administracion quedan en ingles por defecto.

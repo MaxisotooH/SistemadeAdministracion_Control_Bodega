@@ -1,0 +1,18 @@
+/* Los selectores de "doble lista" del admin (permisos, grupos) traen un
+   ancho fijo angosto en el CSS base de Django, que corta el texto largo
+   de los permisos. El contenedor se ajusta al contenido (no al reves),
+   asi que un ancho en porcentaje no alcanza a crecer: hay que fijar
+   pixeles concretos para que los contenedores padres se agranden. */
+.selector {
+    width: 720px !important;
+}
+
+.selector-available,
+.selector-chosen {
+    width: 330px !important;
+}
+
+.selector-available select,
+.selector-chosen select {
+    width: 330px !important;
+}
