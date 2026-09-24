@@ -215,13 +215,13 @@ JAZZMIN_SETTINGS = {
     'related_modal_active': True,
     'show_ui_builder': False,
     'language_chooser': False,
-    'custom_links': {
-        'core': [{
-            'name': 'Volver al inicio',
-            'url': '/',
-            'icon': 'fas fa-home',
-        }],
-    },
+    # 'custom_links' cuelga del menu lateral de una app -- como 'core' no
+    # tiene modelos registrados en el admin, ese grupo nunca aparece y el
+    # link se pierde. 'topmenu_links' en cambio va en la barra superior,
+    # siempre visible sin depender de eso.
+    'topmenu_links': [
+        {'name': 'Volver al inicio', 'url': 'dashboard', 'icon': 'fas fa-home'},
+    ],
 }
 
 JAZZMIN_UI_TWEAKS = {
