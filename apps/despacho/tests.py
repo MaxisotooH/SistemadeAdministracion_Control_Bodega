@@ -47,6 +47,19 @@ class DespachoStockTests(TestCase):
         self.assertEqual(movimiento.stock_resultante, 10)
         self.assertEqual(movimiento.documento, f'Despacho #{despacho.pk}')
 
+    def test_despacho_por_exactamente_el_stock_disponible_se_permite(self):
+        # Caso limite: pedir justo lo que hay (ni una unidad mas) debe
+        # funcionar y dejar el stock en 0, no ser tratado como error.
+        despacho = self._crear_despacho()
+        detalle = DespachoDetalle(
+            despacho=despacho, producto=self.producto, ubicacion=self.ubicacion, cantidad=30,
+        )
+        detalle.clean()  # no debe lanzar ValidationError
+        detalle.save()
+
+        stock = Stock.objects.get(producto=self.producto, ubicacion=self.ubicacion, lote='')
+        self.assertEqual(stock.cantidad, 0)
+
     def test_detalle_rechaza_cantidad_mayor_a_disponible(self):
         despacho = self._crear_despacho()
         detalle = DespachoDetalle(
@@ -95,6 +108,9 @@ class DespachoPermisosTests(TestCase):
         self.ventas = User.objects.create_user('ventas', password='clave12345')
         self.ventas.groups.add(Group.objects.get(name='Ventas'))
 
+        self.compras = User.objects.create_user('compras', password='clave12345')
+        self.compras.groups.add(Group.objects.get(name='Compras'))
+
         categoria = Categoria.objects.create(nombre='General')
         unidad = UnidadMedida.objects.create(codigo='UN', nombre='Unidad')
         producto = Producto.objects.create(
@@ -116,6 +132,12 @@ class DespachoPermisosTests(TestCase):
     def test_ventas_puede_crear(self):
         self.client.force_login(self.ventas)
         self.assertEqual(self.client.get(reverse('despacho:nuevo')).status_code, 200)
+
+    def test_compras_no_puede_crear_despachos(self):
+        # Compras solo tiene permiso sobre Recepcion, no sobre Despacho --
+        # aunque este autenticado y tenga un rol real, no es el que le toca.
+        self.client.force_login(self.compras)
+        self.assertEqual(self.client.get(reverse('despacho:nuevo')).status_code, 403)
 
     def test_ni_siquiera_superusuario_puede_eliminar_via_admin(self):
         admin_user = User.objects.create_superuser('super', 'super@test.com', 'clave12345')
