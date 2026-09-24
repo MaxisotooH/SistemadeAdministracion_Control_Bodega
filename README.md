@@ -93,3 +93,22 @@ también corren contra PostgreSQL.
 Quedan fuera del MVP (documentados como Fase 2): devoluciones, ajustes de
 inventario físico, dashboard valorizado, alertas, reportes/exportación y
 auditoría avanzada.
+
+## Despliegue a producción
+
+El proyecto está listo para desplegarse en cualquier plataforma basada en
+`Procfile` (Railway, Render, Heroku, Fly.io, etc.):
+
+- `gunicorn` sirve la aplicación; `whitenoise` sirve los archivos estáticos
+  sin necesidad de un servidor web aparte (nginx, etc.).
+- Variables de entorno mínimas: `DJANGO_SECRET_KEY`, `DEBUG=False`,
+  `ALLOWED_HOSTS`, `DATABASE_URL` (Postgres).
+- Con `DEBUG=False` se activan automáticamente HTTPS obligatorio, cookies
+  seguras y HSTS (ver `config/settings.py`).
+- El `Procfile` corre `migrate` en cada release y levanta `gunicorn` como
+  proceso web.
+
+Antes de ir a producción falta: cargar los maestros/roles iniciales en el
+ambiente real, crear los usuarios definitivos por persona (hoy solo existe
+`admin` y una cuenta de prueba), y decidir dónde se aloja la base de datos
+PostgreSQL productiva.
