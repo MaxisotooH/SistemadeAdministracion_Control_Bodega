@@ -55,12 +55,17 @@ LOCAL_APPS = [
 ]
 
 # 'axes' controla el bloqueo de cuentas tras varios intentos de login
-# fallidos (ver AXES_* mas abajo).
+# fallidos (ver AXES_* mas abajo). Se usa una subclase propia de su
+# AppConfig solo para que la seccion del admin diga "Seguridad de
+# acceso" en vez de "Axes".
 THIRD_PARTY_APPS = [
-    'axes',
+    'apps.core.axes_config.AxesConfigEs',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
+# THIRD_PARTY_APPS va antes que LOCAL_APPS: apps/core/admin.py reemplaza
+# el admin de 'axes' por uno en español, y para eso 'axes' debe registrar
+# el suyo primero (el autodiscovery de admin sigue el orden de esta lista).
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',

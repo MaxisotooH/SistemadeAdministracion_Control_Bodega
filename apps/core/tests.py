@@ -58,3 +58,50 @@ class PaginasDeErrorTests(TestCase):
         response = self.client.get(reverse('recepcion:nueva'))
         self.assertEqual(response.status_code, 403)
         self.assertContains(response, 'No tienes permiso para ver esta página', status_code=403)
+
+
+class AdminAxesEnEspanolTests(TestCase):
+    """El admin de django-axes (Access attempts, etc.) no trae traduccion
+    al español -- se reemplaza por un admin propio en apps/core/admin.py.
+    Estas pruebas confirman que un administrador puede desbloquear a un
+    usuario con un solo clic, en español, sin la accion generica
+    "Eliminar" que trae Django por defecto (para no confundir)."""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'super_es', 'super@test.com', 'ClaveBuena123',
+        )
+        self.bloqueado = User.objects.create_user('bloqueado_demo', password='ClaveBuena123')
+        for _ in range(5):
+            self.client.post(reverse('login'), {
+                'username': 'bloqueado_demo', 'password': 'clave-mala',
+            })
+        self.client.logout()
+
+    def test_pantalla_de_intentos_esta_en_espanol(self):
+        self.client.force_login(self.admin)
+        response = self.client.get('/admin/axes/accessattempt/')
+        self.assertContains(response, 'Intentos de acceso')
+        self.assertNotContains(response, 'Access attempts')
+
+    def test_solo_existe_la_accion_desbloquear_no_la_de_eliminar(self):
+        self.client.force_login(self.admin)
+        response = self.client.get('/admin/axes/accessattempt/')
+        self.assertContains(response, 'Desbloquear usuario')
+        self.assertNotContains(response, 'Eliminar Intentos de acceso')
+
+    def test_desbloquear_desde_el_admin_deja_entrar_de_nuevo(self):
+        from axes.models import AccessAttempt
+
+        self.client.force_login(self.admin)
+        intento = AccessAttempt.objects.get(username='bloqueado_demo')
+        self.client.post('/admin/axes/accessattempt/', {
+            'action': 'desbloquear_seleccionados',
+            '_selected_action': [str(intento.pk)],
+        })
+        self.client.logout()
+
+        response = self.client.post(reverse('login'), {
+            'username': 'bloqueado_demo', 'password': 'ClaveBuena123',
+        })
+        self.assertEqual(response.status_code, 302)
