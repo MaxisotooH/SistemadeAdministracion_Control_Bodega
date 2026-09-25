@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
 
+from apps.core.pagination import paginar
 from apps.maestros.models import Bodega, Producto
 
 from .models import Kardex, Stock
@@ -21,12 +22,16 @@ def stock_list(request):
 
     stocks = stocks.order_by('producto__nombre', 'ubicacion')
 
+    filtros = request.GET.copy()
+    filtros.pop('pagina', None)
+
     context = {
-        'stocks': stocks,
+        'stocks': paginar(request, stocks),
         'productos': Producto.objects.filter(activo=True).order_by('nombre'),
         'bodegas': Bodega.objects.filter(activa=True).order_by('nombre'),
         'producto_id': producto_id,
         'bodega_id': bodega_id,
+        'extra_qs': filtros.urlencode(),
     }
     return render(request, 'inventario/stock_list.html', context)
 
@@ -40,11 +45,15 @@ def kardex_list(request):
     if producto_id:
         movimientos = movimientos.filter(producto_id=producto_id)
 
-    movimientos = movimientos.order_by('-creado_en')[:200]
+    movimientos = movimientos.order_by('-creado_en')
+
+    filtros = request.GET.copy()
+    filtros.pop('pagina', None)
 
     context = {
-        'movimientos': movimientos,
+        'movimientos': paginar(request, movimientos),
         'productos': Producto.objects.filter(activo=True).order_by('nombre'),
         'producto_id': producto_id,
+        'extra_qs': filtros.urlencode(),
     }
     return render(request, 'inventario/kardex_list.html', context)

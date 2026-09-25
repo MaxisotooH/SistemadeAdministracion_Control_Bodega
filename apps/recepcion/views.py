@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.core.pagination import paginar
+
 from .forms import RecepcionDetalleFormSet, RecepcionForm
 from .models import Recepcion
 
@@ -10,8 +12,8 @@ from .models import Recepcion
 @login_required
 @permission_required('recepcion.view_recepcion', raise_exception=True)
 def recepcion_list(request):
-    recepciones = Recepcion.objects.select_related('proveedor').order_by('-fecha', '-id')[:100]
-    return render(request, 'recepcion/list.html', {'recepciones': recepciones})
+    recepciones = Recepcion.objects.select_related('proveedor').order_by('-fecha', '-id')
+    return render(request, 'recepcion/list.html', {'recepciones': paginar(request, recepciones)})
 
 
 @login_required

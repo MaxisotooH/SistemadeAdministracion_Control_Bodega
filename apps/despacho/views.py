@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.core.pagination import paginar
+
 from .forms import DespachoDetalleFormSet, DespachoForm
 from .models import Despacho
 
@@ -10,8 +12,8 @@ from .models import Despacho
 @login_required
 @permission_required('despacho.view_despacho', raise_exception=True)
 def despacho_list(request):
-    despachos = Despacho.objects.select_related('cliente').order_by('-fecha', '-id')[:100]
-    return render(request, 'despacho/list.html', {'despachos': despachos})
+    despachos = Despacho.objects.select_related('cliente').order_by('-fecha', '-id')
+    return render(request, 'despacho/list.html', {'despachos': paginar(request, despachos)})
 
 
 @login_required

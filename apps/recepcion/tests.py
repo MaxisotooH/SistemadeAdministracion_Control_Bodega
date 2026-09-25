@@ -84,3 +84,29 @@ class RecepcionPermisosTests(TestCase):
     def test_operador_de_bodega_puede_crear(self):
         self.client.force_login(self.operador)
         self.assertEqual(self.client.get(reverse('recepcion:nueva')).status_code, 200)
+
+
+class RecepcionPaginacionTests(TestCase):
+    """Antes el listado cortaba en los ultimos 100 registros y no habia
+    forma de ver los mas antiguos. Se confirma que con mas registros de
+    los que caben en una pagina, se puede navegar a los siguientes."""
+
+    def setUp(self):
+        self.usuario = User.objects.create_user('operador3', password='clave12345')
+        self.usuario.groups.add(Group.objects.get(name='Operador de Bodega'))
+        proveedor = Proveedor.objects.create(razon_social='Proveedor paginacion', rut='3-5')
+        for i in range(30):
+            Recepcion.objects.create(
+                proveedor=proveedor, fecha='2026-01-01', registrado_por=self.usuario,
+            )
+
+    def test_primera_pagina_muestra_25_y_hay_boton_siguiente(self):
+        self.client.force_login(self.usuario)
+        response = self.client.get(reverse('recepcion:lista'))
+        self.assertEqual(len(response.context['recepciones']), 25)
+        self.assertContains(response, 'Siguiente')
+
+    def test_segunda_pagina_muestra_los_5_restantes(self):
+        self.client.force_login(self.usuario)
+        response = self.client.get(reverse('recepcion:lista'), {'pagina': 2})
+        self.assertEqual(len(response.context['recepciones']), 5)
