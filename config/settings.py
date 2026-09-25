@@ -25,6 +25,29 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 # ---------------------------------------------------------------------------
+# Monitoreo de errores (Sentry). Se activa solo si SENTRY_DSN esta
+# configurado en .env -- sin eso, no hace nada (no rompe el desarrollo
+# local). El DSN se obtiene creando una cuenta gratuita en sentry.io.
+# ---------------------------------------------------------------------------
+SENTRY_DSN = env('SENTRY_DSN', default='')
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        # Porcentaje de requests normales a rastrear para medir rendimiento.
+        # Bajo a proposito: el objetivo principal es enterarse de errores,
+        # no pagar por trazas de cada clic.
+        traces_sample_rate=0.1,
+        # No manda nombre/usuario/IP salvo que se active a proposito --
+        # cuida la privacidad de quien esta usando el sistema.
+        send_default_pii=False,
+        environment=env('SENTRY_ENVIRONMENT', default='development'),
+    )
+
+# ---------------------------------------------------------------------------
 # Aplicaciones instaladas
 # ---------------------------------------------------------------------------
 # 'jazzmin' le da al admin de Django una apariencia moderna y amigable
