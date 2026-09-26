@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: bodega_user
+          POSTGRES_PASSWORD: bodega_pass
+          POSTGRES_DB: bodega_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bodega_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DJANGO_SECRET_KEY: clave-solo-para-ci-no-usar-en-produccion
+      # DEBUG=True igual que en desarrollo local: con False se activa el
+      # storage de archivos estaticos con manifiesto (whitenoise), que
+      # necesita un collectstatic previo -- no vale la pena aqui, el
+      # objetivo es correr los tests igual que se corren localmente.
+      DEBUG: 'True'
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      DATABASE_URL: postgres://bodega_user:bodega_pass@localhost:5432/bodega_db
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Revisar el proyecto (manage.py check)
+        run: python manage.py check
+
+      - name: Correr la suite de pruebas
+        run: python manage.py test
