@@ -112,3 +112,23 @@ Antes de ir a producción falta: cargar los maestros/roles iniciales en el
 ambiente real, crear los usuarios definitivos por persona (hoy solo existe
 `admin` y una cuenta de prueba), y decidir dónde se aloja la base de datos
 PostgreSQL productiva.
+
+### Respaldo de la base de datos
+
+Para desarrollo local, mientras no hay nada desplegado, existe un comando
+propio que genera un respaldo real de PostgreSQL:
+
+```bash
+python manage.py respaldar_bd
+```
+
+Guarda un archivo `.sql` en `backups/` (no se sube al repo) y borra
+automáticamente los de más de 14 días (`--mantener-dias 0` para no borrar
+ninguno). Créalo como tarea programada de Windows si quieres que corra solo
+todos los días.
+
+**El día que se despliegue a producción**, verificar explícitamente que el
+plan de PostgreSQL contratado incluya respaldos automáticos diarios — no
+asumir que "la nube lo hace sola" (Render y DigitalOcean lo incluyen en sus
+planes de base de datos administrada; hay que confirmarlo en el plan
+específico antes de contratar).
