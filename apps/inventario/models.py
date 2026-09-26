@@ -41,6 +41,13 @@ class Kardex(TimeStampedModel):
     class Meta:
         verbose_name_plural = 'Kardex'
         ordering = ['-creado_en']
+        indexes = [
+            # Cubre el orden por defecto (todo el kardex, mas reciente
+            # primero) y el filtro por producto que ofrece la pantalla de
+            # Kardex, ambos ordenados por fecha.
+            models.Index(fields=['creado_en']),
+            models.Index(fields=['producto', 'creado_en']),
+        ]
 
     def __str__(self):
         return f'{self.tipo} {self.producto.sku} x{self.cantidad}'

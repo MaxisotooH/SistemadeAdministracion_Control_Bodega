@@ -18,6 +18,10 @@ class Despacho(TimeStampedModel):
 
     class Meta:
         ordering = ['-fecha', '-id']
+        indexes = [
+            # El listado (ahora paginado) ordena por fecha en cada pagina.
+            models.Index(fields=['fecha']),
+        ]
 
     def __str__(self):
         return f'Despacho #{self.pk} - {self.cliente}'
